@@ -224,19 +224,17 @@ function ChalkboardPage() {
       setVideoLoading(true);
       try {
         const query = encodeURIComponent(`${videoTopic} educational explanation`);
-        const res = await fetch(`https://pipedapi.kavin.rocks/search?q=${query}&filter=videos`);
-        if (!res.ok) throw new Error("Piped API error");
+        const res = await fetch(`/api/video?q=${query}`, {
+          method: "POST",
+        });
+        if (!res.ok) throw new Error("Failed to fetch video from server API");
         const data = await res.json();
-        const firstVideo = data.items?.find((item: any) => item.type === "stream" || item.url?.includes("v="));
-        if (firstVideo && active) {
-          const id = firstVideo.url.split("v=")[1]?.split("&")[0];
-          if (id) {
-            setVideoId(id);
-            return;
-          }
+        if (data.videoId && active) {
+          setVideoId(data.videoId);
+          return;
         }
       } catch (e) {
-        console.error("Failed to fetch video from Piped API:", e);
+        console.error("Failed to fetch video via server route:", e);
       } finally {
         if (active) setVideoLoading(false);
       }

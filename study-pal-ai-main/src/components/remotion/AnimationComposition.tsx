@@ -25,7 +25,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
           left: posX,
           top: "30%",
           transform: `scale(${progress})`,
-          opacity: opacity * exitOpacity,
+          opacity: 1,
         }}
       >
         <div
@@ -36,7 +36,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
             background: "linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05))",
             backdropFilter: "blur(8px)",
             boxShadow: "0 0 30px rgba(139,92,246,0.3)",
-            color: "#f1f5f9",
+            color: "#e2e8f0",
             fontSize: 22,
             fontWeight: 700,
             fontFamily: "Inter, system-ui, sans-serif",
@@ -58,7 +58,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
           position: "absolute",
           left: posX,
           top: "50%",
-          opacity: opacity * exitOpacity,
+          opacity: 1,
         }}
       >
         <svg width="200" height="40" viewBox="0 0 200 40">
@@ -86,7 +86,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
         </svg>
         <div
           style={{
-            color: "#94a3b8",
+            color: "#ffffff",
             fontSize: 14,
             fontFamily: "Inter, system-ui, sans-serif",
             marginTop: 4,
@@ -108,7 +108,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
           left: posX,
           top: "40%",
           transform: `translateY(${slideY}px)`,
-          opacity: opacity * exitOpacity,
+          opacity: 1,
         }}
       >
         <div
@@ -116,11 +116,8 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
             fontSize: 28,
             fontWeight: 800,
             fontFamily: "'Caveat', cursive",
-            background: "linear-gradient(135deg, #f59e0b, #fbbf24)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            textShadow: "0 0 30px rgba(245,158,11,0.3)",
+            color: "#fbbf24",
+            textShadow: "0 0 30px rgba(251,191,36,0.3)",
             maxWidth: 350,
           }}
         >
@@ -139,7 +136,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
         left: posX,
         top: step.position === "center" ? "35%" : "45%",
         transform: `translateY(${slideY}px)`,
-        opacity: opacity * exitOpacity,
+        opacity: 1,
         maxWidth: 360,
       }}
     >
@@ -148,7 +145,7 @@ function StepRenderer({ step, startFrame }: { step: AnimationStep; startFrame: n
           fontSize: 20,
           fontWeight: 500,
           fontFamily: "Inter, system-ui, sans-serif",
-          color: "#e2e8f0",
+          color: "#ffffff",
           lineHeight: 1.5,
         }}
       >
@@ -173,7 +170,7 @@ export function AnimationComposition({ steps }: { steps: AnimationStep[] }) {
   return (
     <AbsoluteFill
       style={{
-        background: "transparent",
+        background: "linear-gradient(135deg, #0a0f1e 0%, #0d1528 100%)",
       }}
     >
       {/* Ambient background elements */}

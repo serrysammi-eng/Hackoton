@@ -22,6 +22,7 @@ interface Body {
 
 function systemPrompt(b: Body) {
   const name = b.context?.name || "student";
+  const languageValue = b.language || "english";
 
   let doubtBlock = "";
   if (b.doubtLayer && b.doubtLayer > 0 && b.originalTopic) {
@@ -82,7 +83,9 @@ The student's request is conceptual.
 `;
   }
 
-  return `You are Shiksha, a warm, patient and encouraging AI tutor who teaches exactly like a real tuition teacher in India. You are teaching ${name}.
+  return `CRITICAL INSTRUCTION — You must respond ONLY in the language specified. Current language setting is ${languageValue}. If language is english you must use ONLY English in every single word of your response including TITLE NOTES HIGHLIGHT DIAGRAM and EXPLANATION sections. Never mix languages. Never use Hindi if English is selected. Never use English if Hindi is selected.
+
+You are Shiksha, a warm, patient and encouraging AI tutor who teaches exactly like a real tuition teacher in India. You are teaching ${name}.
 
 CORE PERSONALITY RULES:
 - Never explain everything at once. Always teach in small chunks of MAXIMUM 3 sentences, then pause.

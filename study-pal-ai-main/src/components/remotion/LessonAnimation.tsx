@@ -22,27 +22,43 @@ function generateFallbackSteps(
 ): AnimationStep[] {
   const steps: AnimationStep[] = [];
 
+  // Start with the title as a glowing text step (type: "equation" provides the glow effect)
   if (title) {
-    steps.push({ text: title, type: "text", duration: 2.5, position: "center" });
+    steps.push({ text: title, type: "equation", duration: 2.5, position: "center" });
   }
 
-  if (sections) {
+  if (sections && sections.length > 0) {
     const positions: Array<"left" | "center" | "right"> = ["left", "center", "right"];
-    sections.slice(0, 5).forEach((s, i) => {
+    // Take up to 4 key headings to create a rich but reasonably-timed animation flow
+    const keySections = sections.slice(0, 4);
+    
+    keySections.forEach((s, i) => {
+      // Box step for key heading
       steps.push({
         text: s.heading,
         type: "box",
-        duration: 2,
+        duration: 2.5,
         position: positions[i % 3],
       });
-      if (i < sections.length - 1) {
+      
+      // Arrow step connecting them
+      if (i < keySections.length - 1) {
         steps.push({
-          text: "",
+          text: "leads to",
           type: "arrow",
-          duration: 1,
+          duration: 1.5,
           position: positions[i % 3],
         });
       }
+    });
+
+    // End with a summary text step
+    const summaryText = `Summary: You have completed the lesson on ${title || "this topic"}!`;
+    steps.push({
+      text: summaryText,
+      type: "text",
+      duration: 3,
+      position: "center",
     });
   }
 

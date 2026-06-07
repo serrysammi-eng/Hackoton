@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiVideoRouteImport } from './routes/api/video'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiChalkboardRouteImport } from './routes/api/chalkboard'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
@@ -33,6 +34,11 @@ const AppRoute = AppRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiVideoRoute = ApiVideoRouteImport.update({
+  id: '/api/video',
+  path: '/api/video',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AppSettingsRoute
   '/api/chalkboard': typeof ApiChalkboardRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/video': typeof ApiVideoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AppSettingsRoute
   '/api/chalkboard': typeof ApiChalkboardRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/video': typeof ApiVideoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_app/settings': typeof AppSettingsRoute
   '/api/chalkboard': typeof ApiChalkboardRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/video': typeof ApiVideoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/chalkboard'
     | '/api/chat'
+    | '/api/video'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/api/chalkboard'
     | '/api/chat'
+    | '/api/video'
   id:
     | '__root__'
     | '/'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_app/settings'
     | '/api/chalkboard'
     | '/api/chat'
+    | '/api/video'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -160,6 +172,7 @@ export interface RootRouteChildren {
   OnboardingRoute: typeof OnboardingRoute
   ApiChalkboardRoute: typeof ApiChalkboardRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiVideoRoute: typeof ApiVideoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/video': {
+      id: '/api/video'
+      path: '/api/video'
+      fullPath: '/api/video'
+      preLoaderRoute: typeof ApiVideoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -270,6 +290,7 @@ const rootRouteChildren: RootRouteChildren = {
   OnboardingRoute: OnboardingRoute,
   ApiChalkboardRoute: ApiChalkboardRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiVideoRoute: ApiVideoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

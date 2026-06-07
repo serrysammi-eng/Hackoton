@@ -62,7 +62,7 @@ async function runJSON<T>(params: z.infer<typeof BaseSchema>, prompt: string, sy
 
 // ----- LESSON (ENRICHED: 6-8 sections with application, mistakes, challenge) -----
 export const generateLesson = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => BaseSchema.parse(d))
+  .validator((d: unknown) => BaseSchema.parse(d))
   .handler(async ({ data }) => {
     const system = `You are StudyMate AI, a fun and clear tutor for ${data.name}.
 ${ageInstruction(data.level)}
@@ -98,13 +98,7 @@ CONTENT RULES:
 - Total word count: aim for 500-700 words.
 
 ANIMATION RULES:
-- Generate 4-6 animationSteps that visually tell the story of this lesson.
-- Start with a "text" step showing the topic title.
-- Use "box" steps for key concepts/terms.
-- Use "arrow" steps to show relationships between concepts.
-- Use "equation" steps for formulas or key phrases.
-- Each step duration should be 1.5-3 seconds.
-- Distribute positions across left, center, right.
+- Also generate an animationSteps array with 6 to 10 steps that visually tell the story of this topic. Each step must have: text which is a short label, type which must be one of box arrow text or equation, duration in seconds between 1.5 and 3, and position which must be one of left center or right. For concept topics create a flow showing how ideas connect using boxes and arrows. For math topics use equation type steps showing the working. Make the steps tell a visual story that matches the lesson content. Add animationSteps to the JSON shape definition so the AI always returns it.
 
 Generate 4 key takeaways instead of 3.`;
     return runJSON<{
@@ -113,13 +107,13 @@ Generate 4 key takeaways instead of 3.`;
       sections: { heading: string; body: string; type?: string }[];
       keyTakeaways: string[];
       funFact: string;
-      animationSteps?: { text: string; type: string; duration: number; position: string }[];
+      animationSteps: { text: string; type: string; duration: number; position: string }[];
     }>(data, prompt, system);
   });
 
 // ----- QUIZ -----
 export const generateQuiz = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => BaseSchema.parse(d))
+  .validator((d: unknown) => BaseSchema.parse(d))
   .handler(async ({ data }) => {
     const system = `You are StudyMate AI quiz generator.
 ${ageInstruction(data.level)}
@@ -135,7 +129,7 @@ Vary difficulty. The answerIndex must be 0..3.`;
 
 // ----- FLASHCARDS -----
 export const generateFlashcards = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => BaseSchema.parse(d))
+  .validator((d: unknown) => BaseSchema.parse(d))
   .handler(async ({ data }) => {
     const system = `You are StudyMate AI flashcard generator.
 ${ageInstruction(data.level)}
@@ -149,7 +143,7 @@ Return JSON: { "cards": [ { "front": "question or term", "back": "short clear an
 // ----- GAME QUESTIONS -----
 const GameSchema = BaseSchema.extend({ gameType: z.enum(["coding", "math", "science"]) });
 export const generateGameQuestions = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => GameSchema.parse(d))
+  .validator((d: unknown) => GameSchema.parse(d))
   .handler(async ({ data }) => {
     const system = `You are StudyMate AI game-question generator.
 ${ageInstruction(data.level)}
