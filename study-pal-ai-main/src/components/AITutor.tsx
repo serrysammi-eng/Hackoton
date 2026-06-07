@@ -1,44 +1,22 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { MessageCircle, Send, X, Trash2, Mic, MicOff, Volume2, VolumeX, Loader2 } from "lucide-react";
+import {
+  MessageCircle,
+  Send,
+  X,
+  Trash2,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  Loader2,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getAISettings, getChat, getPrefs, setChat } from "@/lib/storage";
-
-/* ------------------- Voice selection ------------------- */
-function pickVoice(voices: SpeechSynthesisVoice[], lang: "en" | "hi") {
-  if (!voices.length) return null;
-  const langPrefix = lang === "hi" ? "hi" : "en";
-  const pool = voices.filter((v) => v.lang.toLowerCase().startsWith(langPrefix));
-  const list = pool.length ? pool : voices;
-  const score = (v: SpeechSynthesisVoice) => {
-    const n = v.name.toLowerCase();
-    let s = 0;
-    if (n.includes("google")) s += 100;
-    else if (n.includes("microsoft")) s += 80;
-    if (n.includes("natural") || n.includes("neural")) s += 50;
-    if (n.includes("female") || n.includes("aria") || n.includes("jenny") || n.includes("samantha")) s += 10;
-    if (v.localService) s += 5;
-    return s;
-  };
-  return [...list].sort((a, b) => score(b) - score(a))[0] ?? null;
-}
-
-function useVoices() {
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  useEffect(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    const load = () => setVoices(window.speechSynthesis.getVoices());
-    load();
-    window.speechSynthesis.onvoiceschanged = load;
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
-  return voices;
-}
+import { pickVoice, useVoices } from "@/lib/voice";
 
 /* ------------------- Whiteboard with word-by-word reveal ------------------- */
 function Whiteboard({
@@ -226,7 +204,15 @@ export function AITutor() {
             : undefined,
         }),
       }),
-    [settings.model, settings.geminiApiKey, prefs?.name, prefs?.language, prefs?.level, prefs?.subject, prefs?.topic],
+    [
+      settings.model,
+      settings.geminiApiKey,
+      prefs?.name,
+      prefs?.language,
+      prefs?.level,
+      prefs?.subject,
+      prefs?.topic,
+    ],
   );
 
   const { messages, sendMessage, status, setMessages } = useChat({
@@ -303,7 +289,9 @@ export function AITutor() {
               <div className="text-2xl drop-shadow-[0_0_8px_rgba(168,85,247,0.3)]">👩‍🏫</div>
               <div>
                 <div className="text-sm font-bold text-slate-100">Shiksha — AI Tutor</div>
-                <div className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider">Real classroom feel</div>
+                <div className="text-[10px] text-purple-400 font-semibold uppercase tracking-wider">
+                  Real classroom feel
+                </div>
               </div>
             </div>
             <div className="flex gap-1.5">
@@ -327,7 +315,9 @@ export function AITutor() {
                 </div>
                 {!latestAssistant && !isLoading && (
                   <div className="flex h-full flex-col items-center justify-center text-center">
-                    <div className="text-5xl drop-shadow-[0_0_20px_rgba(168,85,247,0.4)] animate-bounce">🦉</div>
+                    <div className="text-5xl drop-shadow-[0_0_20px_rgba(168,85,247,0.4)] animate-bounce">
+                      🦉
+                    </div>
                     <p className="mt-4 font-caveat text-2xl text-slate-300">
                       Hi {prefs?.name || "friend"}! Ask me anything.
                     </p>
@@ -360,7 +350,11 @@ export function AITutor() {
                     className="rounded-full p-1 hover:bg-white/[0.05] hover:text-purple-400"
                     title={voiceOn ? "Mute voice" : "Unmute voice"}
                   >
-                    {voiceOn ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+                    {voiceOn ? (
+                      <Volume2 className="h-3.5 w-3.5" />
+                    ) : (
+                      <VolumeX className="h-3.5 w-3.5" />
+                    )}
                   </button>
                   <button
                     onClick={() => {
@@ -426,7 +420,8 @@ export function AITutor() {
                   variant={mic.listening ? "default" : "outline"}
                   className={cn(
                     "h-10 w-10 shrink-0 rounded-full border-purple-500/20 bg-white/[0.04] text-purple-400",
-                    mic.listening && "animate-pulse bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)] border-transparent",
+                    mic.listening &&
+                      "animate-pulse bg-red-500 text-white shadow-[0_0_15px_rgba(239,68,68,0.5)] border-transparent",
                   )}
                   aria-label="Voice input"
                 >

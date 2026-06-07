@@ -102,9 +102,11 @@ function SettingsPage() {
       {/* Progress card */}
       <div
         className="opacity-0 animate-[fadeSlideUp_0.5s_ease-out_forwards] rounded-2xl bg-gradient-to-br from-purple-900/60 to-[#0a1628] border border-purple-500/20 p-5 text-white shadow-[0_0_30px_rgba(139,92,246,0.15)]"
-        style={{ animationDelay: '0ms' }}
+        style={{ animationDelay: "0ms" }}
       >
-        <div className="text-xs font-semibold uppercase tracking-wider text-purple-400/70">Your progress</div>
+        <div className="text-xs font-semibold uppercase tracking-wider text-purple-400/70">
+          Your progress
+        </div>
         <div className="mt-2 grid grid-cols-3 gap-3 text-center">
           <div>
             <div className="text-2xl font-bold text-amber-400">{progress.xp}</div>
@@ -122,7 +124,10 @@ function SettingsPage() {
         {progress.badges.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">
             {progress.badges.slice(-8).map((b) => (
-              <span key={b} className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-xs text-amber-400">
+              <span
+                key={b}
+                className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-xs text-amber-400"
+              >
                 {b}
               </span>
             ))}
@@ -136,9 +141,11 @@ function SettingsPage() {
       {/* AI Model */}
       <section
         className="opacity-0 animate-[fadeSlideUp_0.5s_ease-out_forwards] rounded-2xl border border-purple-500/15 bg-white/[0.03] backdrop-blur-xl p-5 shadow-[0_0_30px_rgba(139,92,246,0.08)]"
-        style={{ animationDelay: '80ms' }}
+        style={{ animationDelay: "80ms" }}
       >
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-purple-400/70">AI Model</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-purple-400/70">
+          AI Model
+        </h2>
         <div className="mt-3 space-y-3">
           <div>
             <Label className="text-xs text-slate-400">Model</Label>
@@ -165,7 +172,8 @@ function SettingsPage() {
               className="mt-1 rounded-xl border border-purple-500/15 bg-white/[0.04] text-slate-200 placeholder:text-slate-500 focus:border-purple-500/40"
             />
             <p className="mt-1 text-xs text-slate-500">
-              Provide your own Google AI Studio key to override Lovable AI. Stored locally in your browser only.
+              Provide your own Google AI Studio key to override Lovable AI. Stored locally in your
+              browser only.
             </p>
           </div>
         </div>
@@ -174,13 +182,19 @@ function SettingsPage() {
       {/* Preferences */}
       <section
         className="opacity-0 animate-[fadeSlideUp_0.5s_ease-out_forwards] rounded-2xl border border-purple-500/15 bg-white/[0.03] backdrop-blur-xl p-5 shadow-[0_0_30px_rgba(139,92,246,0.08)]"
-        style={{ animationDelay: '160ms' }}
+        style={{ animationDelay: "160ms" }}
       >
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-purple-400/70">Learning preferences</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-purple-400/70">
+          Learning preferences
+        </h2>
         <div className="mt-3 space-y-3">
           <div>
             <Label className="text-xs text-slate-400">Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1 rounded-xl border border-purple-500/15 bg-white/[0.04] text-slate-200 placeholder:text-slate-500 focus:border-purple-500/40" />
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1 rounded-xl border border-purple-500/15 bg-white/[0.04] text-slate-200 placeholder:text-slate-500 focus:border-purple-500/40"
+            />
           </div>
           <div>
             <Label className="text-xs text-slate-400">Language</Label>
@@ -229,10 +243,17 @@ function SettingsPage() {
           </div>
           <div>
             <Label className="text-xs text-slate-400">Topic</Label>
-            <Input value={topic} onChange={(e) => setTopic(e.target.value)} className="mt-1 rounded-xl border border-purple-500/15 bg-white/[0.04] text-slate-200 placeholder:text-slate-500 focus:border-purple-500/40" />
+            <Input
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              className="mt-1 rounded-xl border border-purple-500/15 bg-white/[0.04] text-slate-200 placeholder:text-slate-500 focus:border-purple-500/40"
+            />
           </div>
         </div>
-        <Button onClick={save} className="mt-4 w-full rounded-full bg-gradient-to-r from-purple-600 to-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300">
+        <Button
+          onClick={save}
+          className="mt-4 w-full rounded-full bg-gradient-to-r from-purple-600 to-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] transition-all duration-300"
+        >
           Save changes
         </Button>
       </section>
@@ -240,22 +261,33 @@ function SettingsPage() {
       {/* Danger */}
       <section
         className="opacity-0 animate-[fadeSlideUp_0.5s_ease-out_forwards] rounded-2xl border border-red-500/20 bg-red-500/[0.03] p-5"
-        style={{ animationDelay: '240ms' }}
+        style={{ animationDelay: "240ms" }}
       >
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-red-400/70">Danger zone</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-red-400/70">
+          Danger zone
+        </h2>
         <div className="mt-3 space-y-2">
-          <Button variant="outline" onClick={() => { clearChat(); toast.success("Chat history cleared"); }} className="w-full rounded-full border border-red-500/30 bg-red-500/[0.06] text-red-400 hover:bg-red-500/[0.12] transition-all duration-300">
+          <Button
+            variant="outline"
+            onClick={() => {
+              clearChat();
+              toast.success("Chat history cleared");
+            }}
+            className="w-full rounded-full border border-red-500/30 bg-red-500/[0.06] text-red-400 hover:bg-red-500/[0.12] transition-all duration-300"
+          >
             <Trash2 className="mr-1 h-4 w-4" /> Clear AI Tutor chat
           </Button>
-          <Button variant="outline" onClick={resetEverything} className="w-full rounded-full border border-red-500/30 bg-red-500/[0.06] text-red-400 hover:bg-red-500/[0.12] transition-all duration-300">
+          <Button
+            variant="outline"
+            onClick={resetEverything}
+            className="w-full rounded-full border border-red-500/30 bg-red-500/[0.06] text-red-400 hover:bg-red-500/[0.12] transition-all duration-300"
+          >
             <LogOut className="mr-1 h-4 w-4" /> Reset all data
           </Button>
         </div>
       </section>
 
-      <div className="pb-4 text-center text-xs text-slate-500">
-        Made with 💜 by StudyMate AI
-      </div>
+      <div className="pb-4 text-center text-xs text-slate-500">Made with 💜 by StudyMate AI</div>
     </div>
   );
 }

@@ -1,5 +1,14 @@
 import { Link, Outlet, createFileRoute, useLocation, useNavigate } from "@tanstack/react-router";
-import { BookOpen, Brain, Gamepad2, Layers, Settings, Flame, Trophy, Presentation } from "lucide-react";
+import {
+  BookOpen,
+  Brain,
+  Gamepad2,
+  Layers,
+  Settings,
+  Flame,
+  Trophy,
+  Presentation,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AITutor } from "@/components/AITutor";
@@ -25,7 +34,7 @@ function AppLayout() {
   useEffect(() => {
     if (!getPrefs()) navigate({ to: "/onboarding", replace: true });
   }, [navigate]);
-  
+
   // Re-render on focus to refresh XP/streak shown in header
   useEffect(() => {
     const onFocus = () => setTick((t) => t + 1);
@@ -36,10 +45,10 @@ function AppLayout() {
       window.removeEventListener("studymate:progress", onFocus);
     };
   }, []);
-  
+
   const prefs = getPrefs();
   const progress = getProgress();
-  
+
   // hide bottom nav from settings if you want; keep it for consistency
   void tick;
 
@@ -48,24 +57,38 @@ function AppLayout() {
   return (
     <div className="min-h-screen bg-[#060d1a] pb-24">
       {/* Ambient background glow */}
-      <div className="pointer-events-none fixed inset-0 z-0" style={{
-        background: "radial-gradient(ellipse at 20% 10%, rgba(139,92,246,0.06), transparent 50%), radial-gradient(ellipse at 80% 90%, rgba(245,158,11,0.03), transparent 50%)"
-      }} />
+      <div
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 20% 10%, rgba(139,92,246,0.06), transparent 50%), radial-gradient(ellipse at 80% 90%, rgba(245,158,11,0.03), transparent 50%)",
+        }}
+      />
 
       {/* Header */}
       <header className="sticky top-0 z-30 border-b border-purple-500/10 bg-[#060d1a]/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-4 py-3">
           <Link to="/learn" className="flex items-center gap-2 group">
-            <span className="text-2xl transition-transform group-hover:scale-110" style={{
-              filter: "drop-shadow(0 0 8px rgba(139,92,246,0.4))",
-            }}>🦉</span>
+            <span
+              className="text-2xl transition-transform group-hover:scale-110"
+              style={{
+                filter: "drop-shadow(0 0 8px rgba(139,92,246,0.4))",
+              }}
+            >
+              🦉
+            </span>
             <div className="text-sm">
-              <div className="font-bold leading-tight" style={{
-                background: "linear-gradient(135deg, #a78bfa, #8b5cf6)",
-                WebkitBackgroundClip: "text",
-                backgroundClip: "text",
-                color: "transparent",
-              }}>StudyMate</div>
+              <div
+                className="font-bold leading-tight"
+                style={{
+                  background: "linear-gradient(135deg, #a78bfa, #8b5cf6)",
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                StudyMate
+              </div>
               <div className="text-xs text-slate-500 leading-tight">Hi, {prefs.name}!</div>
             </div>
           </Link>
@@ -115,7 +138,12 @@ function AppLayout() {
                   animation: `fadeSlideUp 0.4s ease-out ${i * 60}ms forwards`,
                 }}
               >
-                <Icon className={cn("h-5 w-5 transition-all duration-300", active && "scale-110 drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]")} />
+                <Icon
+                  className={cn(
+                    "h-5 w-5 transition-all duration-300",
+                    active && "scale-110 drop-shadow-[0_0_8px_rgba(139,92,246,0.6)]",
+                  )}
+                />
                 <span>{t.label}</span>
                 {active && (
                   <span className="h-1 w-4 rounded-full bg-gradient-to-r from-purple-500 to-purple-400 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />

@@ -30,7 +30,10 @@ export const Route = createFileRoute("/api/chat")({
         }
         const usingGeminiDirect = isGeminiDirect(body.userApiKey);
         const provider = getProvider(body.userApiKey);
-        const model = resolveModelId(body.model || "google/gemini-3-flash-preview", usingGeminiDirect);
+        const model = resolveModelId(
+          body.model || "google/gemini-3-flash-preview",
+          usingGeminiDirect,
+        );
 
         const result = streamText({
           model: provider(model),

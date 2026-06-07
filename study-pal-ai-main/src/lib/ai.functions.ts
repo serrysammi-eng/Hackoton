@@ -48,7 +48,11 @@ function extractJson<T>(text: string): T {
   return JSON.parse(s) as T;
 }
 
-async function runJSON<T>(params: z.infer<typeof BaseSchema>, prompt: string, system: string): Promise<T> {
+async function runJSON<T>(
+  params: z.infer<typeof BaseSchema>,
+  prompt: string,
+  system: string,
+): Promise<T> {
   const usingGeminiDirect = isGeminiDirect(params.userApiKey);
   const provider = getProvider(params.userApiKey);
   const modelId = resolveModelId(params.model, usingGeminiDirect);
@@ -78,9 +82,23 @@ Return JSON of shape:
   ],
   "keyTakeaways": ["string", "string", "string", "string"],
   "funFact": "one fun fact with emoji",
-  "animationSteps": [
-    { "text": "string", "type": "box or arrow or text or equation", "duration": 2, "position": "left or center or right" }
-  ]
+  "scene": {
+    "analogy_context": "One sentence framing a real-life analogy for the whole lesson (cricket, food, school, trains, Bollywood).",
+    "steps": [
+      {
+        "on_screen_text": "Short label or key term visible on the canvas (5 words max)",
+        "voiceover_script": "What Shiksha says aloud for this step (2-3 sentences, warm teacher tone)",
+        "svg_doodle": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'><!-- simple shapes using stroke only, no fill except rgba --></svg>",
+        "duration": 3
+      }
+    ],
+    "interactive_question": {
+      "question": "A simple check-understanding question about the lesson",
+      "choices": ["option A", "option B", "option C", "option D"],
+      "answerIndex": 0,
+      "hint": "Short friendly hint shown on wrong answer (1 sentence)"
+    }
+  }
 }
 
 SECTION RULES — generate between 6 and 8 sections total:
@@ -97,8 +115,13 @@ CONTENT RULES:
 - Make section bodies genuinely informative and engaging.
 - Total word count: aim for 500-700 words.
 
-ANIMATION RULES:
-- Also generate an animationSteps array with 6 to 10 steps that visually tell the story of this topic. Each step must have: text which is a short label, type which must be one of box arrow text or equation, duration in seconds between 1.5 and 3, and position which must be one of left center or right. For concept topics create a flow showing how ideas connect using boxes and arrows. For math topics use equation type steps showing the working. Make the steps tell a visual story that matches the lesson content. Add animationSteps to the JSON shape definition so the AI always returns it.
+SCENE RULES — generate exactly 5 to 7 steps:
+- Each step should tell part of the lesson story visually.
+- on_screen_text: ultra-short, 5 words max, acts like a chapter title.
+- voiceover_script: 2-3 sentences Shiksha would say warmly. Match the language setting.
+- svg_doodle: A simple inline SVG (viewBox="0 0 300 200"). Use ONLY stroke-based shapes (lines, circles, rects, paths, text). No background fills. Stroke colors: #a78bfa (purple) for shapes, #fbbf24 (amber) for labels, #e2e8f0 (slate) for text. Keep it simple — 3 to 6 shapes per step. Each shape MUST have a unique class like "s1", "s2" etc. Do NOT reference external resources. If you cannot generate a meaningful SVG, output null.
+- duration: between 2.5 and 4 seconds.
+- interactive_question: one multiple-choice check question. answerIndex must be 0, 1, 2, or 3.
 
 Generate 4 key takeaways instead of 3.`;
     return runJSON<{
@@ -107,7 +130,21 @@ Generate 4 key takeaways instead of 3.`;
       sections: { heading: string; body: string; type?: string }[];
       keyTakeaways: string[];
       funFact: string;
-      animationSteps: { text: string; type: string; duration: number; position: string }[];
+      scene: {
+        analogy_context: string;
+        steps: {
+          on_screen_text: string;
+          voiceover_script: string;
+          svg_doodle: string | null;
+          duration: number;
+        }[];
+        interactive_question: {
+          question: string;
+          choices: [string, string, string, string];
+          answerIndex: 0 | 1 | 2 | 3;
+          hint: string;
+        };
+      };
     }>(data, prompt, system);
   });
 
@@ -150,11 +187,16 @@ ${ageInstruction(data.level)}
 ${languageInstruction(data.language)}
 Output STRICT JSON only.`;
     let typeHint = "";
-    if (data.gameType === "coding") typeHint = "Python coding questions (output, syntax, while/for loops, variables).";
+    if (data.gameType === "coding")
+      typeHint = "Python coding questions (output, syntax, while/for loops, variables).";
     else if (data.gameType === "math") typeHint = "Quick math problems suitable for the level.";
     else typeHint = `${data.subject} quiz battle questions.`;
     const prompt = `Generate 10 quick multiple-choice questions for a game. ${typeHint}
 Topic context: "${data.topic}". Keep each question short (one line).
 Return JSON: { "questions": [ { "q": "string", "choices": ["A","B","C","D"], "answerIndex": 0 } ] }`;
-    return runJSON<{ questions: { q: string; choices: string[]; answerIndex: number }[] }>(data, prompt, system);
+    return runJSON<{ questions: { q: string; choices: string[]; answerIndex: number }[] }>(
+      data,
+      prompt,
+      system,
+    );
   });

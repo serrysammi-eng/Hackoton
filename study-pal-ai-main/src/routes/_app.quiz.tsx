@@ -41,7 +41,9 @@ function QuizPage() {
   const [correct, setCorrect] = useState(0);
   const [done, setDone] = useState(false);
 
-  const cacheKey = prefs ? `quiz:${prefs.subject}:${prefs.topic}:${prefs.language}:${prefs.level}` : "";
+  const cacheKey = prefs
+    ? `quiz:${prefs.subject}:${prefs.topic}:${prefs.language}:${prefs.level}`
+    : "";
 
   const load = async (force = false) => {
     if (!prefs) return;
@@ -158,12 +160,20 @@ function QuizPage() {
               : "bg-gradient-to-br from-purple-900/80 to-[#0a1628] border border-purple-500/20 shadow-[0_0_30px_rgba(139,92,246,0.15)]",
           )}
         >
-          <div className={cn("text-6xl", passed && "drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]")}>{passed ? "🏆" : "💪"}</div>
-          <h2 className={cn("mt-3 text-2xl font-bold", passed ? "text-amber-400" : "text-slate-100")}>
+          <div className={cn("text-6xl", passed && "drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]")}>
+            {passed ? "🏆" : "💪"}
+          </div>
+          <h2
+            className={cn("mt-3 text-2xl font-bold", passed ? "text-amber-400" : "text-slate-100")}
+          >
             {passed ? "Amazing work!" : "Good try!"}
           </h2>
           <p className="mt-1 text-lg text-slate-200">
-            You got <strong>{correct}/{quiz.length}</strong> correct
+            You got{" "}
+            <strong>
+              {correct}/{quiz.length}
+            </strong>{" "}
+            correct
           </p>
           <p className="mt-2 text-sm text-slate-400">
             +{passed ? 50 : 15} XP earned {passed && "· 🎯 Badge unlocked"}
@@ -228,10 +238,19 @@ function QuizPage() {
                 disabled={picked !== null}
                 className={cn(
                   "w-full rounded-2xl border p-3 text-left text-sm font-medium transition-all duration-300 opacity-0 animate-[fadeSlideUp_0.5s_ease-out_forwards]",
-                  picked === null && "border-purple-500/15 bg-white/[0.03] text-slate-200 hover:border-purple-400/40 hover:bg-white/[0.06]",
-                  picked !== null && isAnswer && "border-emerald-500/60 bg-emerald-500/10 text-emerald-400",
-                  picked !== null && isPicked && !isAnswer && "border-red-500/60 bg-red-500/10 text-red-400",
-                  picked !== null && !isAnswer && !isPicked && "border-white/5 bg-white/[0.01] text-slate-500 opacity-60",
+                  picked === null &&
+                    "border-purple-500/15 bg-white/[0.03] text-slate-200 hover:border-purple-400/40 hover:bg-white/[0.06]",
+                  picked !== null &&
+                    isAnswer &&
+                    "border-emerald-500/60 bg-emerald-500/10 text-emerald-400",
+                  picked !== null &&
+                    isPicked &&
+                    !isAnswer &&
+                    "border-red-500/60 bg-red-500/10 text-red-400",
+                  picked !== null &&
+                    !isAnswer &&
+                    !isPicked &&
+                    "border-white/5 bg-white/[0.01] text-slate-500 opacity-60",
                 )}
                 style={{ animationDelay: `${i * 80}ms` }}
               >
@@ -247,7 +266,9 @@ function QuizPage() {
             <div
               className={cn(
                 "rounded-xl p-3 text-sm font-semibold",
-                isCorrect ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-red-500/10 text-red-400 border border-red-500/20",
+                isCorrect
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  : "bg-red-500/10 text-red-400 border border-red-500/20",
               )}
             >
               {isCorrect ? "✅ Correct!" : "❌ Not quite."}
@@ -275,7 +296,9 @@ function QuizPage() {
             )}
 
             {showExplain && (
-              <div className="mt-3 rounded-xl border border-purple-500/10 bg-white/[0.03] p-3 text-sm text-slate-300">{current.explanation}</div>
+              <div className="mt-3 rounded-xl border border-purple-500/10 bg-white/[0.03] p-3 text-sm text-slate-300">
+                {current.explanation}
+              </div>
             )}
 
             <button

@@ -103,7 +103,9 @@ function GamePage() {
     if (timerRef.current) clearInterval(timerRef.current);
     if (win) {
       addXP(75);
-      awardBadge(`🏆 ${gameType === "coding" ? "Coder" : gameType === "math" ? "Math Racer" : "Quiz Champ"}`);
+      awardBadge(
+        `🏆 ${gameType === "coding" ? "Coder" : gameType === "math" ? "Math Racer" : "Quiz Champ"}`,
+      );
       celebrate();
     } else {
       addXP(10);
@@ -195,7 +197,9 @@ function GamePage() {
               : "bg-gradient-to-br from-purple-900/80 to-[#0a1628] border border-purple-500/20 shadow-[0_0_30px_rgba(139,92,246,0.15)]",
           )}
         >
-          <div className={cn("text-6xl", win && "drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]")}>{win ? "🏆" : "😅"}</div>
+          <div className={cn("text-6xl", win && "drop-shadow-[0_0_20px_rgba(245,158,11,0.5)]")}>
+            {win ? "🏆" : "😅"}
+          </div>
           <h2 className={cn("mt-3 text-2xl font-bold", win ? "text-amber-400" : "text-slate-100")}>
             {win ? "You won!" : "So close!"}
           </h2>
@@ -213,7 +217,9 @@ function GamePage() {
           {!win && (
             <button
               onClick={() =>
-                openTutor(`I lost a ${gameType} game on ${prefs.topic}. Can you teach me the basics?`)
+                openTutor(
+                  `I lost a ${gameType} game on ${prefs.topic}. Can you teach me the basics?`,
+                )
               }
               className="rounded-full border border-purple-500/20 bg-white/[0.04] px-4 py-2.5 text-sm font-medium text-slate-200 transition-all duration-300 hover:bg-white/[0.08]"
             >
@@ -242,13 +248,19 @@ function GamePage() {
       {gameType === "coding" && (
         <div className="rounded-2xl bg-gradient-to-br from-purple-900/60 to-[#0a1628] border border-purple-500/20 p-4 text-white shadow-[0_0_30px_rgba(139,92,246,0.15)]">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-bold uppercase tracking-wider text-purple-300">🏎️ Code Racer</span>
+            <span className="font-bold uppercase tracking-wider text-purple-300">
+              🏎️ Code Racer
+            </span>
             <span className="text-amber-400 font-semibold">{Math.round(carPos)}%</span>
           </div>
           <div className="relative mt-3 h-12 overflow-hidden rounded-full bg-white/[0.06]">
             <div className="absolute inset-y-0 left-0 right-0 flex items-center">
               {[25, 50, 75].map((p) => (
-                <div key={p} className="absolute h-full w-px bg-purple-500/30" style={{ left: `${p}%` }}>
+                <div
+                  key={p}
+                  className="absolute h-full w-px bg-purple-500/30"
+                  style={{ left: `${p}%` }}
+                >
                   <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-purple-400/60" />
                 </div>
               ))}
@@ -268,10 +280,14 @@ function GamePage() {
         <div className="rounded-2xl bg-gradient-to-br from-purple-900/60 to-[#0a1628] border border-purple-500/20 p-4 text-white shadow-[0_0_30px_rgba(139,92,246,0.15)]">
           <div className="flex items-center justify-between text-xs">
             <span className="font-bold uppercase tracking-wider text-purple-300">🧮 Math Race</span>
-            <span className={cn(
-              "flex items-center gap-1 font-semibold transition-all duration-300",
-              timeLeft < 10 ? "text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]" : "text-slate-300"
-            )}>
+            <span
+              className={cn(
+                "flex items-center gap-1 font-semibold transition-all duration-300",
+                timeLeft < 10
+                  ? "text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"
+                  : "text-slate-300",
+              )}
+            >
               <Timer className="h-3 w-3" /> {timeLeft}s
             </span>
           </div>
@@ -289,7 +305,7 @@ function GamePage() {
                 "h-full rounded-full transition-all duration-500",
                 timeLeft < 10
                   ? "bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.4)]"
-                  : "bg-gradient-to-r from-purple-600 to-purple-400 shadow-[0_0_10px_rgba(139,92,246,0.4)]"
+                  : "bg-gradient-to-r from-purple-600 to-purple-400 shadow-[0_0_10px_rgba(139,92,246,0.4)]",
               )}
               style={{ width: `${(timeLeft / 60) * 100}%` }}
             />
@@ -299,7 +315,9 @@ function GamePage() {
 
       {gameType === "science" && (
         <div className="rounded-2xl bg-gradient-to-br from-purple-900/60 to-[#0a1628] border border-purple-500/20 p-4 text-white shadow-[0_0_30px_rgba(139,92,246,0.15)]">
-          <div className="text-center text-xs font-bold uppercase tracking-wider text-purple-300">⚡ Quiz Battle</div>
+          <div className="text-center text-xs font-bold uppercase tracking-wider text-purple-300">
+            ⚡ Quiz Battle
+          </div>
           <div className="mt-3 space-y-2 text-sm">
             <div>
               <div className="flex justify-between text-slate-300">
@@ -346,9 +364,15 @@ function GamePage() {
                 disabled={picked !== null}
                 className={cn(
                   "rounded-2xl border p-3 text-left text-sm font-medium transition-all duration-300 opacity-0 animate-[fadeSlideUp_0.5s_ease-out_forwards]",
-                  picked === null && "border-purple-500/15 bg-white/[0.03] text-slate-200 hover:border-purple-400/40 hover:bg-white/[0.06]",
-                  picked !== null && isAnswer && "border-emerald-500/60 bg-emerald-500/10 text-emerald-400",
-                  picked !== null && isPicked && !isAnswer && "border-red-500/60 bg-red-500/10 text-red-400",
+                  picked === null &&
+                    "border-purple-500/15 bg-white/[0.03] text-slate-200 hover:border-purple-400/40 hover:bg-white/[0.06]",
+                  picked !== null &&
+                    isAnswer &&
+                    "border-emerald-500/60 bg-emerald-500/10 text-emerald-400",
+                  picked !== null &&
+                    isPicked &&
+                    !isAnswer &&
+                    "border-red-500/60 bg-red-500/10 text-red-400",
                 )}
                 style={{ animationDelay: `${i * 80}ms` }}
               >

@@ -29,7 +29,13 @@ const TOPICS_BY_SUBJECT: Record<Subject, string[]> = {
   science: ["Physics basics", "Energy", "Forces", "Space & Planets", "Light & Sound"],
   chemistry: ["Atoms & Molecules", "Periodic Table", "Acids & Bases", "Chemical Reactions"],
   biology: ["Cells", "Human Body", "Plants", "Genetics", "Ecosystems"],
-  technology: ["Python basics", "Web Development", "AI & ML", "How Computers Work", "Cybersecurity"],
+  technology: [
+    "Python basics",
+    "Web Development",
+    "AI & ML",
+    "How Computers Work",
+    "Cybersecurity",
+  ],
 };
 
 function Onboarding() {
@@ -73,7 +79,10 @@ function Onboarding() {
             <div className="mb-6">
               <div className="flex items-center justify-between text-xs text-slate-400">
                 <span>Step {step} of 5</span>
-                <button onClick={back} className="text-purple-400 underline transition-all duration-300 hover:text-purple-300">
+                <button
+                  onClick={back}
+                  className="text-purple-400 underline transition-all duration-300 hover:text-purple-300"
+                >
                   Back
                 </button>
               </div>
@@ -96,7 +105,9 @@ function Onboarding() {
                   height={200}
                   className="mx-auto h-40 w-40 animate-float drop-shadow-[0_0_30px_rgba(139,92,246,0.4)]"
                 />
-                <h1 className="mt-6 text-4xl font-bold text-slate-100 bg-gradient-to-r from-purple-400 to-amber-400 bg-clip-text text-transparent">StudyMate AI</h1>
+                <h1 className="mt-6 text-4xl font-bold text-slate-100 bg-gradient-to-r from-purple-400 to-amber-400 bg-clip-text text-transparent">
+                  StudyMate AI
+                </h1>
                 <p className="mt-2 text-lg text-slate-400">Learn anything, your way ✨</p>
               </div>
             )}

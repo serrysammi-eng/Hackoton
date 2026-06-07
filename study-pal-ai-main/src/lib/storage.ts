@@ -41,8 +41,7 @@ export const getAISettings = (): AISettings =>
 export const setAISettings = (s: AISettings) => write(KEYS.ai, s);
 
 // Theme
-export const getTheme = (): "light" | "dark" =>
-  read<"light" | "dark">(KEYS.theme, "light");
+export const getTheme = (): "light" | "dark" => read<"light" | "dark">(KEYS.theme, "light");
 export const setTheme = (t: "light" | "dark") => write(KEYS.theme, t);
 
 // Chat history

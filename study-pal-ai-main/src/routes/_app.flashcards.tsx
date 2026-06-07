@@ -28,7 +28,9 @@ function FlashcardsPage() {
   const [reviewed, setReviewed] = useState<Set<number>>(new Set());
   const [done, setDone] = useState(false);
 
-  const cacheKey = prefs ? `cards:${prefs.subject}:${prefs.topic}:${prefs.language}:${prefs.level}` : "";
+  const cacheKey = prefs
+    ? `cards:${prefs.subject}:${prefs.topic}:${prefs.language}:${prefs.level}`
+    : "";
 
   const load = async (force = false) => {
     if (!prefs) return;
@@ -122,7 +124,11 @@ function FlashcardsPage() {
           <div className="text-6xl drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]">🎉</div>
           <h2 className="mt-3 text-2xl font-bold text-amber-400">All done!</h2>
           <p className="mt-1 text-slate-200">
-            You knew <strong>{knew}/{cards.length}</strong> cards
+            You knew{" "}
+            <strong>
+              {knew}/{cards.length}
+            </strong>{" "}
+            cards
           </p>
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -149,7 +155,9 @@ function FlashcardsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between text-sm">
-        <span className="text-slate-400">Card {idx + 1} of {cards.length}</span>
+        <span className="text-slate-400">
+          Card {idx + 1} of {cards.length}
+        </span>
         <span className="font-semibold text-emerald-400">{knew} known</span>
       </div>
 

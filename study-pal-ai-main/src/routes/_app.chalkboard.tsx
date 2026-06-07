@@ -1,5 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Paperclip, Send, Settings2, Sparkles, Square, Volume2, VolumeX, Loader2 } from "lucide-react";
+import {
+  Paperclip,
+  Send,
+  Settings2,
+  Sparkles,
+  Square,
+  Volume2,
+  VolumeX,
+  Loader2,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -17,15 +26,26 @@ export const Route = createFileRoute("/_app/chalkboard")({
   head: () => ({
     meta: [
       { title: "AI Chalkboard — StudyMate AI" },
-      { name: "description", content: "Learn visually with Shiksha, an AI tutor that teaches with synchronized voice and handwriting." },
+      {
+        name: "description",
+        content:
+          "Learn visually with Shiksha, an AI tutor that teaches with synchronized voice and handwriting.",
+      },
     ],
   }),
   component: ChalkboardPage,
 });
 
 /* ───────── Types ───────── */
-interface DiagramBox { id: string; label: string }
-interface DiagramArrow { from: string; to: string; label?: string }
+interface DiagramBox {
+  id: string;
+  label: string;
+}
+interface DiagramArrow {
+  from: string;
+  to: string;
+  label?: string;
+}
 interface Lesson {
   title: string;
   notes: string[];
@@ -44,14 +64,19 @@ interface ChalkSettings {
 }
 const SETTINGS_KEY = "studymate.chalkboard.settings";
 const DEFAULT_SETTINGS: ChalkSettings = {
-  language: "english", voice: "female", muted: false, mode: "tutor",
+  language: "english",
+  voice: "female",
+  muted: false,
+  mode: "tutor",
 };
 function loadSettings(): ChalkSettings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-  } catch { /* noop */ }
+  } catch {
+    /* noop */
+  }
   const prefs = getPrefs();
   return {
     ...DEFAULT_SETTINGS,
@@ -59,7 +84,11 @@ function loadSettings(): ChalkSettings {
   };
 }
 function saveSettings(s: ChalkSettings) {
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch { /* noop */ }
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  } catch {
+    /* noop */
+  }
 }
 
 /* ───────── Voice ───────── */
@@ -76,7 +105,8 @@ function pickVoice(lang: ChalkSettings["language"], gender: ChalkSettings["voice
     if (n.includes("google")) s += 100;
     else if (n.includes("microsoft")) s += 80;
     if (n.includes("natural") || n.includes("neural")) s += 50;
-    if (gender === "female" && /female|aria|jenny|samantha|zira|priya|neerja|swara/i.test(n)) s += 20;
+    if (gender === "female" && /female|aria|jenny|samantha|zira|priya|neerja|swara/i.test(n))
+      s += 20;
     if (gender === "male" && /male|david|alex|ravi|guy|matthew/i.test(n)) s += 20;
     return s;
   };
@@ -84,15 +114,20 @@ function pickVoice(lang: ChalkSettings["language"], gender: ChalkSettings["voice
 }
 
 /* ───────── Question classification ───────── */
-const CALC_RX = /\b(solve|calculate|compute|simplify|evaluate|integrate|differentiate|derive|code|program|write\s+(?:a\s+)?(?:function|program|code)|equation|find\s+the\s+value)\b|\d\s*[+\-*/=^]\s*\d|[+\-*/=^]\s*\d|\d\s*[+\-*/=^]/i;
-const CONCEPT_RX = /\b(what\s+is|what\s+are|what\s+do|how\s+does|how\s+do|how\s+is|why\s+does|why\s+do|why\s+is|explain|describe|define|tell\s+me\s+about|kya\s+hai|kaise|kyu+n?)\b/i;
+const CALC_RX =
+  /\b(solve|calculate|compute|simplify|evaluate|integrate|differentiate|derive|code|program|write\s+(?:a\s+)?(?:function|program|code)|equation|find\s+the\s+value)\b|\d\s*[+\-*/=^]\s*\d|[+\-*/=^]\s*\d|\d\s*[+\-*/=^]/i;
+const CONCEPT_RX =
+  /\b(what\s+is|what\s+are|what\s+do|how\s+does|how\s+do|how\s+is|why\s+does|why\s+do|why\s+is|explain|describe|define|tell\s+me\s+about|kya\s+hai|kaise|kyu+n?)\b/i;
 function isConceptQuestion(q: string) {
   if (CALC_RX.test(q)) return false;
   return CONCEPT_RX.test(q);
 }
 function topicFromQuestion(q: string) {
   return q
-    .replace(/^(please|kindly|can\s+you|could\s+you|tell\s+me|explain|describe|define|what\s+is|what\s+are|what\s+do|how\s+does|how\s+do|why\s+does|why\s+do|why\s+is|how\s+is)\s+/i, "")
+    .replace(
+      /^(please|kindly|can\s+you|could\s+you|tell\s+me|explain|describe|define|what\s+is|what\s+are|what\s+do|how\s+does|how\s+do|why\s+does|why\s+do|why\s+is|how\s+is)\s+/i,
+      "",
+    )
     .replace(/[?.!]+\s*$/g, "")
     .trim()
     .split(/\s+/)
@@ -127,10 +162,20 @@ function parseLesson(raw: string): Lesson | null {
   const text = raw.replace(/\r/g, "");
   const chatMatch = text.match(/^\s*CHAT:\s*(.+?)\s*(?:\nEND)?$/im);
   if (chatMatch && !/^TITLE:/im.test(text)) {
-    return { title: "", notes: [], highlights: [], diagram: null, explanation: "", chat: chatMatch[1].trim() };
+    return {
+      title: "",
+      notes: [],
+      highlights: [],
+      diagram: null,
+      explanation: "",
+      chat: chatMatch[1].trim(),
+    };
   }
   const section = (name: string) => {
-    const re = new RegExp(`^${name}\\s*:\\s*([\\s\\S]*?)(?=^(?:TITLE|NOTES|HIGHLIGHT|DIAGRAM|EXPLANATION|END)\\b|\\Z)`, "im");
+    const re = new RegExp(
+      `^${name}\\s*:\\s*([\\s\\S]*?)(?=^(?:TITLE|NOTES|HIGHLIGHT|DIAGRAM|EXPLANATION|END)\\b|\\Z)`,
+      "im",
+    );
     const m = text.match(re);
     return m ? m[1].trim() : "";
   };
@@ -159,8 +204,14 @@ function parseLesson(raw: string): Lesson | null {
       const line = ln.replace(/^\s*[-•*]\s*/, "").trim();
       if (!line) continue;
       const boxM = line.match(/^box\s*:\s*(.+)$/i);
-      if (boxM) { const label = boxM[1].trim(); boxes.push({ id: label.toLowerCase(), label }); continue; }
-      const arrM = line.match(/^arrow\s*:\s*(.+?)\s*(?:->|→|=>)\s*([^,]+?)(?:\s*,\s*label\s*:\s*(.+))?$/i);
+      if (boxM) {
+        const label = boxM[1].trim();
+        boxes.push({ id: label.toLowerCase(), label });
+        continue;
+      }
+      const arrM = line.match(
+        /^arrow\s*:\s*(.+?)\s*(?:->|→|=>)\s*([^,]+?)(?:\s*,\s*label\s*:\s*(.+))?$/i,
+      );
       if (arrM) {
         arrows.push({
           from: arrM[1].trim().toLowerCase(),
@@ -171,7 +222,9 @@ function parseLesson(raw: string): Lesson | null {
     }
     if (boxes.length) diagram = { boxes, arrows };
   }
-  const explanation = section("EXPLANATION").replace(/\nEND\s*$/i, "").trim();
+  const explanation = section("EXPLANATION")
+    .replace(/\nEND\s*$/i, "")
+    .trim();
   if (!title && !notes.length && !explanation) return null;
   return { title, notes, highlights, diagram, explanation };
 }
@@ -200,7 +253,9 @@ function ChalkboardPage() {
   const voicesReadyRef = useRef(false);
   const prefs = getPrefs();
 
-  useEffect(() => { saveSettings(settings); }, [settings]);
+  useEffect(() => {
+    saveSettings(settings);
+  }, [settings]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -210,7 +265,9 @@ function ChalkboardPage() {
     };
     load();
     window.speechSynthesis.onvoiceschanged = load;
-    return () => { window.speechSynthesis.onvoiceschanged = null; };
+    return () => {
+      window.speechSynthesis.onvoiceschanged = null;
+    };
   }, []);
 
   // Fetch video ID from Piped API on videoTopic change
@@ -225,7 +282,7 @@ function ChalkboardPage() {
       try {
         const query = encodeURIComponent(`${videoTopic} educational explanation`);
         const res = await fetch(`/api/video?q=${query}`, {
-          method: "POST",
+          method: "GET",
         });
         if (!res.ok) throw new Error("Failed to fetch video from server API");
         const data = await res.json();
@@ -252,7 +309,9 @@ function ChalkboardPage() {
       const u = new SpeechSynthesisUtterance(" ");
       u.volume = 0;
       window.speechSynthesis.speak(u);
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, []);
 
   const stop = useCallback(() => {
@@ -318,7 +377,9 @@ function ChalkboardPage() {
             mode: settings.mode,
             model: ai.model,
             userApiKey: ai.geminiApiKey,
-            context: prefs ? { name: prefs.name, level: prefs.level, subject: prefs.subject } : undefined,
+            context: prefs
+              ? { name: prefs.name, level: prefs.level, subject: prefs.subject }
+              : undefined,
             doubtLayer: nextLayer,
             originalTopic: topicForApi,
             forceDiagram: nextLayer === 2,
@@ -336,7 +397,14 @@ function ChalkboardPage() {
         }
         const parsed = parseLesson(buf);
         if (!parsed) {
-          setLesson({ title: "", notes: [], highlights: [], diagram: null, explanation: "", chat: "Hmm, I couldn't put that on the board. Try rephrasing?" });
+          setLesson({
+            title: "",
+            notes: [],
+            highlights: [],
+            diagram: null,
+            explanation: "",
+            chat: "Hmm, I couldn't put that on the board. Try rephrasing?",
+          });
           setStatus("done");
           return;
         }
@@ -351,7 +419,14 @@ function ChalkboardPage() {
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
         console.error(err);
-        setLesson({ title: "", notes: [], highlights: [], diagram: null, explanation: "", chat: "Couldn't reach the AI. Try again." });
+        setLesson({
+          title: "",
+          notes: [],
+          highlights: [],
+          diagram: null,
+          explanation: "",
+          chat: "Couldn't reach the AI. Try again.",
+        });
         setStatus("done");
       } finally {
         abortRef.current = null;
@@ -374,11 +449,14 @@ function ChalkboardPage() {
 
   const isBusy = status === "generating" || status === "teaching";
 
-  useEffect(() => () => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-  }, []);
+  useEffect(
+    () => () => {
+      if (typeof window !== "undefined" && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    },
+    [],
+  );
 
   const headerTopic = useMemo(() => question || "AI Chalkboard", [question]);
 
@@ -404,13 +482,18 @@ function ChalkboardPage() {
 
           {/* Visual reference (using resolved videoId via Piped API) */}
           {!!videoTopic && !videoHidden && (
-            <div className="relative z-10 shrink-0 border-b border-purple-500/15 bg-black/40 px-3 pb-2 pt-2 animate-fade-in"
-              style={{ maxHeight: "40%" }}>
+            <div
+              className="relative z-10 shrink-0 border-b border-purple-500/15 bg-black/40 px-3 pb-2 pt-2 animate-fade-in"
+              style={{ maxHeight: "40%" }}
+            >
               <div className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wider text-purple-400">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
                 Visual reference
               </div>
-              <div className="relative overflow-hidden rounded-xl border border-purple-500/15 bg-[#060d1a]" style={{ aspectRatio: "16 / 9", maxHeight: "calc(40vh - 60px)" }}>
+              <div
+                className="relative overflow-hidden rounded-xl border border-purple-500/15 bg-[#060d1a]"
+                style={{ aspectRatio: "16 / 9", maxHeight: "calc(40vh - 60px)" }}
+              >
                 {videoLoading || !videoId ? (
                   <div className="flex h-full w-full items-center justify-center text-xs text-slate-400">
                     <Loader2 className="mr-2 h-4 w-4 animate-spin text-purple-400" />
@@ -452,7 +535,9 @@ function ChalkboardPage() {
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-purple-300" />
                 </span>
                 {status === "generating"
-                  ? (doubtLayerRef.current ? `Re-teaching (try ${doubtLayerRef.current})…` : "Thinking…")
+                  ? doubtLayerRef.current
+                    ? `Re-teaching (try ${doubtLayerRef.current})…`
+                    : "Thinking…"
                   : `Teaching ${question?.slice(0, 28) || "now"}…`}
               </div>
             )}
@@ -472,12 +557,21 @@ function ChalkboardPage() {
         )}
 
         <div className="mx-auto flex max-w-xl items-end gap-2 rounded-3xl border border-purple-500/20 bg-white/[0.04] p-2 shadow-[0_4px_24px_rgba(0,0,0,0.4)] backdrop-blur-xl focus-within:border-purple-500/40 transition-all">
-          <label className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-white/10" aria-label="Attach image">
+          <label
+            className="flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-slate-300 transition-colors hover:bg-white/10"
+            aria-label="Attach image"
+          >
             <Paperclip className="h-4 w-4" />
-            <input type="file" accept="image/*" className="hidden"
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
               onChange={(e) => {
                 const f = e.target.files?.[0];
-                if (f) setInput((cur) => (cur ? cur + ` (image: ${f.name})` : `Help me with this image: ${f.name}`));
+                if (f)
+                  setInput((cur) =>
+                    cur ? cur + ` (image: ${f.name})` : `Help me with this image: ${f.name}`,
+                  );
                 e.target.value = "";
               }}
             />
@@ -485,19 +579,37 @@ function ChalkboardPage() {
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }}
-            placeholder={settings.mode === "tutor" ? "Ask anything — I'll teach you step by step…" : "Ask a question…"}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                submit();
+              }
+            }}
+            placeholder={
+              settings.mode === "tutor"
+                ? "Ask anything — I'll teach you step by step…"
+                : "Ask a question…"
+            }
             rows={1}
             className="flex-1 resize-none bg-transparent px-2 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
           />
           {isBusy ? (
-            <Button onClick={stop} size="icon" className="h-10 w-10 shrink-0 rounded-full bg-red-500/90 hover:bg-red-600" aria-label="Stop">
+            <Button
+              onClick={stop}
+              size="icon"
+              className="h-10 w-10 shrink-0 rounded-full bg-red-500/90 hover:bg-red-600"
+              aria-label="Stop"
+            >
               <Square className="h-4 w-4 fill-current text-white" />
             </Button>
           ) : (
-            <Button onClick={submit} disabled={!input.trim()} size="icon"
+            <Button
+              onClick={submit}
+              disabled={!input.trim()}
+              size="icon"
               className="h-10 w-10 shrink-0 rounded-full bg-gradient-to-r from-purple-600 to-purple-400 text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] hover:opacity-95"
-              aria-label="Send">
+              aria-label="Send"
+            >
               <Send className="h-4 w-4" />
             </Button>
           )}
@@ -505,19 +617,20 @@ function ChalkboardPage() {
 
         {!question && !isBusy && (
           <div className="mx-auto mt-3 flex max-w-xl flex-wrap justify-center gap-2">
-            {[
-              "Hello!",
-              "What is photosynthesis?",
-              "Explain TCP vs UDP",
-              "Solve 2x + 3 = 11",
-            ].map((q) => (
-              <button key={q}
-                onClick={() => { setInput(""); void handleAsk(q); }}
-                className="rounded-full border border-purple-500/15 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300 backdrop-blur transition hover:border-purple-400/40 hover:text-white"
-              >
-                {q}
-              </button>
-            ))}
+            {["Hello!", "What is photosynthesis?", "Explain TCP vs UDP", "Solve 2x + 3 = 11"].map(
+              (q) => (
+                <button
+                  key={q}
+                  onClick={() => {
+                    setInput("");
+                    void handleAsk(q);
+                  }}
+                  className="rounded-full border border-purple-500/15 bg-white/[0.03] px-3 py-1.5 text-xs text-slate-300 backdrop-blur transition hover:border-purple-400/40 hover:text-white"
+                >
+                  {q}
+                </button>
+              ),
+            )}
           </div>
         )}
       </div>
@@ -532,13 +645,18 @@ function ChalkboardPage() {
           </DrawerHeader>
           <div className="space-y-5 px-5 pb-8">
             <div>
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Teaching style</div>
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Teaching style
+              </div>
               <div className="grid grid-cols-2 gap-2 rounded-2xl border border-purple-500/15 bg-white/[0.04] p-1">
-                {([
-                  { v: "tutor", label: "Tutor mode", sub: "Slow, step-by-step" },
-                  { v: "direct", label: "Direct mode", sub: "Quick answers" },
-                ] as const).map((opt) => (
-                  <button key={opt.v}
+                {(
+                  [
+                    { v: "tutor", label: "Tutor mode", sub: "Slow, step-by-step" },
+                    { v: "direct", label: "Direct mode", sub: "Quick answers" },
+                  ] as const
+                ).map((opt) => (
+                  <button
+                    key={opt.v}
                     onClick={() => setSettings({ ...settings, mode: opt.v })}
                     className={cn(
                       "rounded-xl px-3 py-2.5 text-left transition",
@@ -555,10 +673,17 @@ function ChalkboardPage() {
             </div>
 
             <div>
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Native language</div>
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Native language
+              </div>
               <select
                 value={settings.language}
-                onChange={(e) => setSettings({ ...settings, language: e.target.value as ChalkSettings["language"] })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    language: e.target.value as ChalkSettings["language"],
+                  })
+                }
                 className="w-full rounded-2xl border border-purple-500/15 bg-white/[0.04] px-4 py-3 text-sm text-slate-100 focus:border-purple-500/40 focus:outline-none"
               >
                 <option value="english">English</option>
@@ -568,10 +693,13 @@ function ChalkboardPage() {
             </div>
 
             <div>
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Voice type</div>
+              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Voice type
+              </div>
               <div className="grid grid-cols-2 gap-2 rounded-2xl border border-purple-500/15 bg-white/[0.04] p-1">
                 {(["female", "male"] as const).map((g) => (
-                  <button key={g}
+                  <button
+                    key={g}
                     onClick={() => setSettings({ ...settings, voice: g })}
                     className={cn(
                       "rounded-xl py-2.5 text-sm font-medium capitalize transition",
@@ -591,14 +719,18 @@ function ChalkboardPage() {
               className="flex w-full items-center justify-between rounded-2xl border border-purple-500/15 bg-white/[0.04] px-4 py-3 text-sm"
             >
               <span className="text-slate-200">Mute teacher voice</span>
-              <span className={cn(
-                "flex h-6 w-11 items-center rounded-full p-0.5 transition",
-                settings.muted ? "bg-slate-700" : "bg-purple-500",
-              )}>
-                <span className={cn(
-                  "h-5 w-5 rounded-full bg-white transition",
-                  settings.muted ? "translate-x-0" : "translate-x-5",
-                )} />
+              <span
+                className={cn(
+                  "flex h-6 w-11 items-center rounded-full p-0.5 transition",
+                  settings.muted ? "bg-slate-700" : "bg-purple-500",
+                )}
+              >
+                <span
+                  className={cn(
+                    "h-5 w-5 rounded-full bg-white transition",
+                    settings.muted ? "translate-x-0" : "translate-x-5",
+                  )}
+                />
               </span>
             </button>
           </div>
@@ -679,10 +811,17 @@ function ChalkboardPage() {
 
 /* ───────── Header ───────── */
 function ChalkHeader({
-  topic, mode, onOpenSettings, muted, onToggleMute,
+  topic,
+  mode,
+  onOpenSettings,
+  muted,
+  onToggleMute,
 }: {
-  topic: string; mode: "tutor" | "direct";
-  onOpenSettings: () => void; muted: boolean; onToggleMute: () => void;
+  topic: string;
+  mode: "tutor" | "direct";
+  onOpenSettings: () => void;
+  muted: boolean;
+  onToggleMute: () => void;
 }) {
   return (
     <div className="sticky top-0 z-10 mx-3 mt-2 flex items-center justify-between rounded-2xl border border-purple-500/15 bg-[#0a1628]/80 px-3 py-2 backdrop-blur-xl">
@@ -698,12 +837,18 @@ function ChalkHeader({
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <button aria-label={muted ? "Unmute" : "Mute"} onClick={onToggleMute}
-          className="grid h-9 w-9 place-items-center rounded-full text-slate-300 transition hover:bg-white/10">
+        <button
+          aria-label={muted ? "Unmute" : "Mute"}
+          onClick={onToggleMute}
+          className="grid h-9 w-9 place-items-center rounded-full text-slate-300 transition hover:bg-white/10"
+        >
           {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
         </button>
-        <button aria-label="Settings" onClick={onOpenSettings}
-          className="grid h-9 w-9 place-items-center rounded-full text-slate-300 transition hover:bg-white/10">
+        <button
+          aria-label="Settings"
+          onClick={onOpenSettings}
+          className="grid h-9 w-9 place-items-center rounded-full text-slate-300 transition hover:bg-white/10"
+        >
           <Settings2 className="h-4 w-4" />
         </button>
       </div>
@@ -715,15 +860,23 @@ function ChalkHeader({
 function EmptyState({ busy }: { busy: boolean }) {
   return (
     <div className="relative flex h-full flex-col items-center justify-center px-6 text-center">
-      <svg viewBox="0 0 200 200" className="h-40 w-40 animate-[float_3s_ease-in-out_infinite] text-purple-400/60"
-        fill="none" stroke="currentColor" strokeWidth="1.2">
+      <svg
+        viewBox="0 0 200 200"
+        className="h-40 w-40 animate-[float_3s_ease-in-out_infinite] text-purple-400/60"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      >
         <circle cx="100" cy="100" r="14" />
         <ellipse cx="100" cy="100" rx="70" ry="22" />
         <ellipse cx="100" cy="100" rx="70" ry="22" transform="rotate(60 100 100)" />
         <ellipse cx="100" cy="100" rx="70" ry="22" transform="rotate(120 100 100)" />
         <circle cx="100" cy="100" r="78" strokeDasharray="2 6" opacity="0.4" />
       </svg>
-      <p className="hand mt-4 text-2xl text-slate-200/90" style={{ textShadow: "0 0 12px rgba(168,85,247,0.4)" }}>
+      <p
+        className="hand mt-4 text-2xl text-slate-200/90"
+        style={{ textShadow: "0 0 12px rgba(168,85,247,0.4)" }}
+      >
         {busy ? "Preparing your lesson…" : "Say hi, or ask me anything!"}
       </p>
       <p className="mt-1 text-xs text-slate-500">Shiksha will teach you step by step.</p>
@@ -733,8 +886,10 @@ function EmptyState({ busy }: { busy: boolean }) {
 function ChatOnly({ text }: { text: string }) {
   return (
     <div className="flex h-full items-center justify-center px-6 text-center">
-      <div className="hand max-w-md text-3xl text-amber-200 fade-in"
-        style={{ textShadow: "0 0 10px rgba(245,158,11,0.35)" }}>
+      <div
+        className="hand max-w-md text-3xl text-amber-200 fade-in"
+        style={{ textShadow: "0 0 10px rgba(245,158,11,0.35)" }}
+      >
         {text}
       </div>
     </div>
@@ -743,7 +898,10 @@ function ChatOnly({ text }: { text: string }) {
 
 /* ───────── Board scene ───────── */
 function BoardScene({
-  lesson, settings, onSpeakingChange, onFinished,
+  lesson,
+  settings,
+  onSpeakingChange,
+  onFinished,
 }: {
   lesson: Lesson;
   settings: ChalkSettings;
@@ -755,10 +913,12 @@ function BoardScene({
     let id = 0;
     const hlKeys = new Set<string>();
     for (const h of lesson.highlights) {
-      h.toLowerCase().split(/\s+/).forEach((w) => {
-        const k = w.replace(/[^\p{L}\p{N}]+/gu, "");
-        if (k) hlKeys.add(k);
-      });
+      h.toLowerCase()
+        .split(/\s+/)
+        .forEach((w) => {
+          const k = w.replace(/[^\p{L}\p{N}]+/gu, "");
+          if (k) hlKeys.add(k);
+        });
     }
     lesson.notes.forEach((note, li) => {
       const parts = note.split(/(\s+)/);
@@ -775,10 +935,12 @@ function BoardScene({
     const out: Array<{ id: number; text: string; start: number; end: number; isHL: boolean }> = [];
     const hlKeys = new Set<string>();
     for (const h of lesson.highlights) {
-      h.toLowerCase().split(/\s+/).forEach((w) => {
-        const k = w.replace(/[^\p{L}\p{N}]+/gu, "");
-        if (k) hlKeys.add(k);
-      });
+      h.toLowerCase()
+        .split(/\s+/)
+        .forEach((w) => {
+          const k = w.replace(/[^\p{L}\p{N}]+/gu, "");
+          if (k) hlKeys.add(k);
+        });
     }
     const re = /\S+/g;
     let m: RegExpExecArray | null;
@@ -802,8 +964,14 @@ function BoardScene({
   useEffect(() => {
     setRevealedUpTo(0);
 
-    if (!lesson.explanation) { onFinished(); return; }
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) { onFinished(); return; }
+    if (!lesson.explanation) {
+      onFinished();
+      return;
+    }
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+      onFinished();
+      return;
+    }
 
     if (settings.muted) {
       setRevealedUpTo(expTokens.length);
@@ -818,23 +986,27 @@ function BoardScene({
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(lesson.explanation);
     const v = pickVoice(settings.language, settings.voice);
-    if (v) { u.voice = v; u.lang = v.lang; }
-    else u.lang = settings.language === "hindi" ? "hi-IN" : "en-US";
+    if (v) {
+      u.voice = v;
+      u.lang = v.lang;
+    } else u.lang = settings.language === "hindi" ? "hi-IN" : "en-US";
     u.rate = 0.85;
     u.pitch = 1.05;
     u.volume = 1;
 
     u.onstart = () => {
       onSpeakingChange(true);
-      
+
       // Fallback timer: starts after 1.5s if no boundary event fires
       fallbackTimeout = setTimeout(() => {
         if (!boundaryFired) {
-          console.warn("SpeechSynthesis onboundary didn't fire. Starting timer-based word reveal fallback.");
+          console.warn(
+            "SpeechSynthesis onboundary didn't fire. Starting timer-based word reveal fallback.",
+          );
           const wordsTotal = expTokens.length;
           const totalMs = Math.max(2000, wordsTotal * 300); // 300ms per word
           const startTime = Date.now();
-          
+
           fallbackInterval = setInterval(() => {
             const elapsed = Date.now() - startTime;
             const expected = Math.min(wordsTotal, Math.floor((elapsed / totalMs) * wordsTotal));
@@ -904,14 +1076,19 @@ function BoardScene({
     <div className="relative h-full w-full overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">
       {/* Title */}
       {lesson.title && (
-        <div className="hand fade-in mb-4 text-3xl font-bold text-amber-400 sm:text-4xl"
-          style={{ textShadow: "0 0 10px rgba(245,158,11,0.4)" }}>
+        <div
+          className="hand fade-in mb-4 text-3xl font-bold text-amber-400 sm:text-4xl"
+          style={{ textShadow: "0 0 10px rgba(245,158,11,0.4)" }}
+        >
           ✦ {lesson.title}
         </div>
       )}
 
       {/* Notes */}
-      <div className="hand space-y-2 text-2xl leading-snug text-slate-100 sm:text-3xl">
+      <div
+        key={lesson.title + lesson.explanation}
+        className="hand space-y-2 text-2xl leading-snug text-slate-100 sm:text-3xl"
+      >
         {lesson.notes.map((_, li) => (
           <div key={li} className="flex items-start gap-2">
             <span className="mt-2.5 inline-block h-2 w-2 shrink-0 rounded-full bg-purple-400/80" />
@@ -922,7 +1099,7 @@ function BoardScene({
                   <span
                     key={t.id}
                     className={cn("note-word", t.isHL && "hl-note")}
-                    style={{ animationDelay: `${(t.id) * 35 + i * 10}ms` }}
+                    style={{ animationDelay: `${t.id * 35 + i * 10}ms` }}
                   >
                     {t.text}
                   </span>
@@ -951,12 +1128,7 @@ function BoardScene({
               return (
                 <span
                   key={t.id}
-                  className={cn(
-                    "spoken",
-                    on && "on",
-                    t.isHL && "hl-glow",
-                    on && t.isHL && "on",
-                  )}
+                  className={cn("spoken", on && "on", t.isHL && "hl-glow", on && t.isHL && "on")}
                 >
                   {t.text}
                 </span>
@@ -973,7 +1145,8 @@ function BoardScene({
 function DiagramSVG({ diagram }: { diagram: NonNullable<Lesson["diagram"]> }) {
   const W = 520;
   const H = Math.max(160, Math.ceil(diagram.boxes.length / 3) * 130 + 40);
-  const boxW = 120, boxH = 56;
+  const boxW = 120,
+    boxH = 56;
   const positions = new Map<string, { x: number; y: number }>();
   diagram.boxes.forEach((b, i) => {
     const col = i % 3;
@@ -986,26 +1159,50 @@ function DiagramSVG({ diagram }: { diagram: NonNullable<Lesson["diagram"]> }) {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-2xl" preserveAspectRatio="xMidYMid meet">
       {diagram.arrows.map((a, i) => {
-        const f = positions.get(a.from); const t = positions.get(a.to);
+        const f = positions.get(a.from);
+        const t = positions.get(a.to);
         if (!f || !t) return null;
-        const x1 = f.x + boxW, y1 = f.y + boxH / 2;
-        const x2 = t.x,        y2 = t.y + boxH / 2;
+        const x1 = f.x + boxW,
+          y1 = f.y + boxH / 2;
+        const x2 = t.x,
+          y2 = t.y + boxH / 2;
         const mx = (x1 + x2) / 2;
         const path = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2 - 8} ${y2}`;
         const delay = 0.6 + i * 0.35;
         return (
           <g key={i}>
-            <path d={path} stroke="#fbbf24" strokeWidth="2.5" fill="none" strokeLinecap="round"
+            <path
+              d={path}
+              stroke="#fbbf24"
+              strokeWidth="2.5"
+              fill="none"
+              strokeLinecap="round"
               className="stroke-draw"
-              style={{ ["--len" as any]: 420, ["--dur" as any]: "0.9s", ["--delay" as any]: `${delay}s` }}
+              style={{
+                ["--len" as any]: 420,
+                ["--dur" as any]: "0.9s",
+                ["--delay" as any]: `${delay}s`,
+              }}
             />
-            <polygon points={`${x2 - 10},${y2 - 5} ${x2},${y2} ${x2 - 10},${y2 + 5}`} fill="#fbbf24"
-              className="fade-in" style={{ animationDelay: `${delay + 0.7}s` }}
+            <polygon
+              points={`${x2 - 10},${y2 - 5} ${x2},${y2} ${x2 - 10},${y2 + 5}`}
+              fill="#fbbf24"
+              className="fade-in"
+              style={{ animationDelay: `${delay + 0.7}s` }}
             />
             {a.label && (
-              <text x={mx} y={(y1 + y2) / 2 - 6} textAnchor="middle"
+              <text
+                x={mx}
+                y={(y1 + y2) / 2 - 6}
+                textAnchor="middle"
                 className="fade-in"
-                style={{ animationDelay: `${delay + 0.4}s`, fontFamily: "'Caveat',cursive", fontSize: 18, fill: "#a78bfa" }}>
+                style={{
+                  animationDelay: `${delay + 0.4}s`,
+                  fontFamily: "'Caveat',cursive",
+                  fontSize: 18,
+                  fill: "#a78bfa",
+                }}
+              >
                 {a.label}
               </text>
             )}
@@ -1017,14 +1214,34 @@ function DiagramSVG({ diagram }: { diagram: NonNullable<Lesson["diagram"]> }) {
         const delay = 0.1 + i * 0.25;
         return (
           <g key={b.id}>
-            <rect x={p.x} y={p.y} width={boxW} height={boxH} rx="12"
-              stroke="#a78bfa" strokeWidth="2" fill="rgba(167,139,250,0.08)"
+            <rect
+              x={p.x}
+              y={p.y}
+              width={boxW}
+              height={boxH}
+              rx="12"
+              stroke="#a78bfa"
+              strokeWidth="2"
+              fill="rgba(167,139,250,0.08)"
               className="stroke-draw"
-              style={{ ["--len" as any]: 380, ["--dur" as any]: "0.7s", ["--delay" as any]: `${delay}s` }}
+              style={{
+                ["--len" as any]: 380,
+                ["--dur" as any]: "0.7s",
+                ["--delay" as any]: `${delay}s`,
+              }}
             />
-            <text x={p.x + boxW / 2} y={p.y + boxH / 2 + 7} textAnchor="middle"
+            <text
+              x={p.x + boxW / 2}
+              y={p.y + boxH / 2 + 7}
+              textAnchor="middle"
               className="fade-in"
-              style={{ animationDelay: `${delay + 0.5}s`, fontFamily: "'Caveat',cursive", fontSize: 22, fill: "#f8fafc" }}>
+              style={{
+                animationDelay: `${delay + 0.5}s`,
+                fontFamily: "'Caveat',cursive",
+                fontSize: 22,
+                fill: "#f8fafc",
+              }}
+            >
               {b.label}
             </text>
           </g>
@@ -1042,11 +1259,14 @@ function Visualizer({ active }: { active: boolean }) {
       {Array.from({ length: bars }).map((_, i) => {
         const delay = (i % 8) * 60;
         return (
-          <span key={i}
+          <span
+            key={i}
             className="w-[2.5px] rounded-full bg-gradient-to-t from-purple-500 to-amber-400"
             style={{
               height: active ? `${6 + ((i * 7) % 22)}px` : "4px",
-              animation: active ? `viz-bar 0.${5 + (i % 4)}s ease-in-out ${delay}ms infinite alternate` : undefined,
+              animation: active
+                ? `viz-bar 0.${5 + (i % 4)}s ease-in-out ${delay}ms infinite alternate`
+                : undefined,
               boxShadow: active ? "0 0 6px rgba(168,85,247,0.5)" : undefined,
               opacity: active ? 1 : 0.35,
             }}

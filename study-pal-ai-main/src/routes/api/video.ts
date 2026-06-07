@@ -10,7 +10,7 @@ const PIPED_INSTANCES = [
 export const Route = createFileRoute("/api/video")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      GET: async ({ request }) => {
         const url = new URL(request.url);
         const query = url.searchParams.get("q") || url.searchParams.get("query");
         if (!query) {
@@ -39,7 +39,7 @@ export const Route = createFileRoute("/api/video")({
             };
 
             const firstVideo = data.items?.find(
-              (item) => item.type === "stream" || item.url?.includes("v=")
+              (item) => item.type === "stream" || item.url?.includes("v="),
             );
 
             let videoId: string | null = null;
@@ -47,7 +47,9 @@ export const Route = createFileRoute("/api/video")({
               videoId = firstVideo.url.split("v=")[1]?.split("&")[0] || null;
             }
 
-            console.log(`Successfully retrieved results from ${instanceBase}. Video ID: ${videoId}`);
+            console.log(
+              `Successfully retrieved results from ${instanceBase}. Video ID: ${videoId}`,
+            );
             return new Response(JSON.stringify({ videoId }), {
               headers: { "Content-Type": "application/json" },
             });
@@ -60,19 +62,22 @@ export const Route = createFileRoute("/api/video")({
         }
 
         // If all instances fail, attempt direct YouTube search scraping fallback
-        console.warn("All Piped API instances failed or timed out. Attempting direct YouTube scraping fallback...");
+        console.warn(
+          "All Piped API instances failed or timed out. Attempting direct YouTube scraping fallback...",
+        );
         try {
           const ytUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query + " explained educational")}`;
           console.log(`Attempting YouTube fallback search: ${ytUrl}`);
-          
+
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 6000);
-          
+
           const res = await fetch(ytUrl, {
             signal: controller.signal,
             headers: {
-              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            }
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
           });
           clearTimeout(timeoutId);
 

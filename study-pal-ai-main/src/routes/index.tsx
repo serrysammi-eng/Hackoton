@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 import { getPrefs } from "@/lib/storage";
 
-export const Route = createFileRoute("/")(  {
+export const Route = createFileRoute("/")({
   component: Index,
 });
 
@@ -20,9 +20,13 @@ function Index() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#060d1a] overflow-hidden relative">
       {/* Ambient background */}
-      <div className="absolute inset-0" style={{
-        background: "radial-gradient(ellipse at 50% 40%, rgba(139,92,246,0.12), transparent 60%), radial-gradient(ellipse at 30% 70%, rgba(245,158,11,0.05), transparent 50%)"
-      }} />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 40%, rgba(139,92,246,0.12), transparent 60%), radial-gradient(ellipse at 30% 70%, rgba(245,158,11,0.05), transparent 50%)",
+        }}
+      />
 
       {/* Animated concentric rings */}
       {[0, 1, 2].map((i) => (
@@ -44,7 +48,8 @@ function Index() {
         <div
           className="text-6xl animate-float mx-auto"
           style={{
-            filter: "drop-shadow(0 0 30px rgba(139,92,246,0.5)) drop-shadow(0 0 60px rgba(139,92,246,0.2))",
+            filter:
+              "drop-shadow(0 0 30px rgba(139,92,246,0.5)) drop-shadow(0 0 60px rgba(139,92,246,0.2))",
           }}
         >
           🦉
@@ -62,7 +67,10 @@ function Index() {
         >
           StudyMate AI
         </h1>
-        <p className="mt-2 text-sm text-slate-400 animate-slide-up" style={{ animationDelay: "0.3s" }}>
+        <p
+          className="mt-2 text-sm text-slate-400 animate-slide-up"
+          style={{ animationDelay: "0.3s" }}
+        >
           Learn anything, your way ✨
         </p>
 
