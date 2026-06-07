@@ -433,3 +433,17 @@
     background-position: 100% 50%;
   }
 }
+
+/* Custom purple pulse animation for Next button */
+@keyframes purplePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0px rgba(168, 85, 247, 0);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.7);
+  }
+}
+.animate-purple-pulse {
+  animation: purplePulse 1.2s infinite ease-in-out;
+}

@@ -83,13 +83,13 @@ Return JSON of shape:
   "keyTakeaways": ["string", "string", "string", "string"],
   "funFact": "one fun fact with emoji",
   "scene": {
-    "analogy_context": "One sentence framing a real-life analogy for the whole lesson (cricket, food, school, trains, Bollywood).",
+    "analogy_context": "One short sentence setting the scene — e.g., 'A busy restaurant where you place your food order'. This appears as the scene title.",
     "steps": [
       {
-        "on_screen_text": "Short label or key term visible on the canvas (5 words max)",
-        "voiceover_script": "What Shiksha says aloud for this step (2-3 sentences, warm teacher tone)",
-        "svg_doodle": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'><!-- simple shapes using stroke only, no fill except rgba --></svg>",
-        "duration": 3
+        "on_screen_text": "One complete flowing story sentence in narrator style — not a keyword, not a label, not a heading. Example: 'Imagine you walk into a restaurant and take a seat.' Not: 'Restaurant analogy'",
+        "voiceover_script": "A natural spoken version of that same sentence — slightly more conversational, as if Shiksha is talking directly to the student. It must describe exactly what is being drawn in svg_doodle at that moment.",
+        "svg_doodle": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 220'><!-- simple shapes using stroke only, no fill --></svg>",
+        "duration": 5
       }
     ],
     "interactive_question": {
@@ -115,13 +115,16 @@ CONTENT RULES:
 - Make section bodies genuinely informative and engaging.
 - Total word count: aim for 500-700 words.
 
-SCENE RULES — generate exactly 5 to 7 steps:
-- Each step should tell part of the lesson story visually.
-- on_screen_text: ultra-short, 5 words max, acts like a chapter title.
-- voiceover_script: 2-3 sentences Shiksha would say warmly. Match the language setting.
-- svg_doodle: A simple inline SVG (viewBox="0 0 300 200"). Use ONLY stroke-based shapes (lines, circles, rects, paths, text). No background fills. Stroke colors: #a78bfa (purple) for shapes, #fbbf24 (amber) for labels, #e2e8f0 (slate) for text. Keep it simple — 3 to 6 shapes per step. Each shape MUST have a unique class like "s1", "s2" etc. Do NOT reference external resources. If you cannot generate a meaningful SVG, output null.
-- duration: between 2.5 and 4 seconds.
-- interactive_question: one multiple-choice check question. answerIndex must be 0, 1, 2, or 3.
+SCENE RULES — generate minimum 4 steps, maximum 6 steps per scene:
+You are generating a visual story, not a list of facts. Each step is one scene in a short film. The drawing, the voice, and the caption must all tell the same moment of the same story. Build the story progressively — never repeat what was already shown.
+
+1. The scene must tell one single continuous story from start to finish — like a short animated film. Every step is one moment in that story. The svg_doodle, voiceover_script, and on_screen_text of each step must all describe the exact same moment.
+2. on_screen_text: one complete flowing story sentence in narrator style — not a keyword, not a label, not a heading. Example: "Imagine you walk into a restaurant and take a seat." Not: "Restaurant analogy"
+3. voiceover_script: a natural spoken version of that same sentence — slightly more conversational, as if Shiksha is talking directly to the student. It must describe exactly what is being drawn in svg_doodle at that moment.
+4. svg_doodle: visually depict exactly what voiceover_script describes at that moment. Must be a valid inline SVG string. Use simple shapes — rectangles, circles, lines, arrows, stick figures, text labels. Hand-drawn rough style. Dark background friendly — use light strokes (#e2e8f0), amber highlights (#fbbf24), purple accents (#a78bfa). Every SVG must have viewBox="0 0 400 220" and xmlns="http://www.w3.org/2000/svg". No external images. No <style> blocks inside SVG — use inline style attributes only.
+   Crucially, each step's svg_doodle must re-include all previously established scene elements plus the new element for this step. Step 3's SVG contains everything from steps 1 and 2 plus the new action. This is how the story accumulates visually.
+5. The final step must always bring the analogy back to the real concept — e.g., the restaurant becomes a keyboard/computer, the waiter becomes the processor, the food becomes the output. The student sees the real-world thing and the concept side by side.
+6. duration: number of seconds this step should stay visible — between 4 and 7 seconds depending on sentence length.
 
 Generate 4 key takeaways instead of 3.`;
     return runJSON<{

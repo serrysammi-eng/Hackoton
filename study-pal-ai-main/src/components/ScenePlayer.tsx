@@ -257,6 +257,7 @@ export function ScenePlayer({ scene, lang = "english", className, onComplete }: 
   const [quizState, setQuizState] = useState<QuizState>("idle");
   const [voiceOn, setVoiceOn] = useState(true);
   const [playKey, setPlayKey] = useState(0); // bumped to replay
+  const [voiceDone, setVoiceDone] = useState(false);
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fallbackRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -291,14 +292,17 @@ export function ScenePlayer({ scene, lang = "english", className, onComplete }: 
 
     clearTimers();
     setRevealedWords(0);
+    setVoiceDone(false);
 
     const script = currentStep.voiceover_script;
     const scriptWords = script.split(/\s+/).filter(Boolean);
     const stepDurationMs = Math.max(currentStep.duration * 1000, 2500);
 
     if (!voiceOn || typeof window === "undefined" || !("speechSynthesis" in window)) {
-      // Muted — just timer-advance
-      timerRef.current = setTimeout(advanceStep, stepDurationMs);
+      // Muted — set timer to enable Next button (no auto-advance!)
+      timerRef.current = setTimeout(() => {
+        setVoiceDone(true);
+      }, stepDurationMs);
       setRevealedWords(scriptWords.length);
       return;
     }
@@ -343,13 +347,17 @@ export function ScenePlayer({ scene, lang = "english", className, onComplete }: 
     u.onend = () => {
       if (fallbackRef.current) clearInterval(fallbackRef.current);
       setRevealedWords(scriptWords.length);
-      // Wait remaining duration then advance
+      // Wait remaining duration then set voiceDone to true
       const remaining = Math.max(200, stepDurationMs - scriptWords.length * 300);
-      timerRef.current = setTimeout(advanceStep, remaining);
+      timerRef.current = setTimeout(() => {
+        setVoiceDone(true);
+      }, remaining);
     };
     u.onerror = () => {
       setRevealedWords(scriptWords.length);
-      timerRef.current = setTimeout(advanceStep, 600);
+      // On onerror, set voiceDone = true silently — do not show any error UI,
+      // just enable the Next button so the student is never blocked.
+      setVoiceDone(true);
     };
 
     // Fallback timer if onboundary never fires
@@ -383,6 +391,7 @@ export function ScenePlayer({ scene, lang = "english", className, onComplete }: 
       clearTimeout(startFallback);
       clearTimeout(speak);
       clearTimers();
+      setVoiceDone(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepIdx, playKey, voiceOn, voices.length, voiceLang]);
@@ -392,6 +401,7 @@ export function ScenePlayer({ scene, lang = "english", className, onComplete }: 
     setStepIdx(0);
     setRevealedWords(0);
     setQuizState("idle");
+    setVoiceDone(false);
     setPlayKey((k) => k + 1);
   };
 
@@ -563,6 +573,21 @@ export function ScenePlayer({ scene, lang = "english", className, onComplete }: 
             >
               <RefreshCw className="h-3.5 w-3.5" />
             </button>
+            {quizState === "idle" && (
+              <button
+                disabled={!voiceDone}
+                onClick={advanceStep}
+                className={cn(
+                  "ml-2 rounded-full px-3 py-1 text-xs font-bold text-white transition-all duration-300",
+                  voiceDone
+                    ? "bg-gradient-to-r from-purple-600 to-purple-400 shadow-[0_0_15px_rgba(139,92,246,0.55)] hover:scale-105 active:scale-95 cursor-pointer"
+                    : "bg-purple-900/40 text-purple-300/60 border border-purple-500/10 opacity-50 cursor-not-allowed",
+                  voiceDone && "animate-purple-pulse",
+                )}
+              >
+                {isLastStep ? "Finish ✓" : "Next →"}
+              </button>
+            )}
           </div>
         </div>
       </div>
